@@ -18,30 +18,30 @@ var Provider = {
 	},
 	annotate: function(fn){
 		console.log(fn);
-		var FN_ARGS = /^function\s*[^\(]*\(\s*([^\)]*)\)/m,
-		args = fn.toString().match(FN_ARGS)[1].split(',').map(function(arg){
-			return arg.trim();
-		});
-		console.log(args);
+		var FN_ARGS = /\((.*?)\)/,
+		match = fn.toString().match(FN_ARGS),
+		args;
+		if (match && match[1]) {
+			args = match[1].split(',').map(function (arg) {
+				return arg.trim();
+			});
+		}
 		return args || [];
 	},
 	invoke: function(fn, locals){
 		console.log('invoke',fn);
+		locals = locals || {};
 		var args = this.annotate(fn),
 		arr = [];
 		for (var i = 0; i < args.length; i++) {
 			var temp = this.get(args[i], locals);
-
-			arr.push( locals ? locals[args[i]] || temp : temp);
+			arr.push( locals[args[i]] || temp);
 		}
-
 		return fn.apply(null, arr);
 	},
 	_register: function (name, fn){
 		console.log('reg',fn);
-		this._providers[name] = function () {
-			return fn;
-		}
+		this._providers[name] = fn;
 	},
 	directive: function (name, fn){
 		this._register(name + this.DIRECTIVES_SUFFIX, fn);
@@ -53,6 +53,7 @@ var Provider = {
 		this._register(name, fn);
 	}
 };
+
 
 Provider.service('Bar', function Bar(){
 	return {
