@@ -26,14 +26,14 @@ Scope.prototype.$new = function() {
 
     this.$$children.push(this);
 
-    return this;
+    return scope;
 };
 
 Scope.counter = 0;
 var a = new Scope();
 
-a.$new();
-console.log(a.$id);
+a = a.$new();
+console.log(a.$id); //1
 
 
 /*function evall(data) {
